@@ -1,31 +1,41 @@
 class NoticesController < ApplicationController
   before_action :set_notice, only: [:show, :edit, :update, :destroy]
+  before_action :authenticate_user!, :except => [:homepage]
 
+  load_and_authorize_resource :except => [:homepage]
   # GET /notices
   # GET /notices.json
   def index
-    @notices = Notice.all
+    #@notices = Notice.all
+    @notices = Notice.where("user_id = ?", current_user.id)
   end
 
   # GET /notices/1
   # GET /notices/1.json
   def show
+    # authenticate_user!
   end
 
   # GET /notices/new
   def new
+    #authenticate_user!
     @notice = Notice.new
+  end
+
+  def homepage
+    @notices = Notice.all
   end
 
   # GET /notices/1/edit
   def edit
+    #authenticate_user!
   end
 
   # POST /notices
   # POST /notices.json
   def create
     @notice = Notice.new(notice_params)
-
+    @notice.user = current_user
     respond_to do |format|
       if @notice.save
         format.html { redirect_to @notice, notice: 'Notice was successfully created.' }
